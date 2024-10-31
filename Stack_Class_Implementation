@@ -1,0 +1,98 @@
+#include <iostream>
+
+class Stack {
+private:
+	char ch[100];
+	int TOP;
+
+public:
+	Stack() {
+		ch[0] = '\0';
+		TOP = -1;
+	}
+
+	void push(char ch) {
+		if (TOP < 99) {
+			this->ch[++TOP] = ch;
+		}
+	}
+
+	void  pop() {
+		if (TOP >= 0) {
+			TOP--;
+		}
+	}
+
+	char top() const{
+		if (TOP >= 0) return ch[TOP];
+	}
+
+	bool empty()const {
+		return TOP <0;
+	}
+
+};
+
+int main() {
+	Stack s1;
+	std::string expr;
+	std::cout << "Enter expression: ";
+	std::cin >> expr;
+	int len = expr.length();
+	bool flag = true;
+
+	for (int i = 0; i < len; i++) {
+
+		if (expr[i] == '(' || expr[i] == '{' || expr[i] == '[') {
+			s1.push(expr[i]);
+		}
+
+		else if (expr[i] == ')' || expr[i] == '}' || expr[i] == ']') {
+			if (s1.empty()) {
+				flag = false;
+				break;
+			}
+			else if (expr[i] == ')') {
+				if (s1.top() == '(') {
+					s1.pop();
+					continue;
+				}
+				else {
+					flag = false;
+					break;
+				}
+			}
+			else if (expr[i] == '}') {
+				if (s1.top() == '{') {
+					s1.pop();
+					continue;
+				}
+				else {
+					flag = false;
+					break;
+				}
+			}
+
+			else if (expr[i] == ']') {
+				if (s1.top() == '[') {
+					s1.pop();
+					continue;
+				}
+				else {
+					flag = false;
+					break;
+				}
+			}
+			if (s1.empty()) {
+				flag = false;
+				break;
+			}
+		}
+	}
+	if (flag) {
+		std::cout << "Brackets Balanced";
+	}
+	else {
+		std::cout << "Brackets not Balanced";
+	}
+}
