@@ -57,7 +57,7 @@ int main() {
 			}
 		}
 	}
-	if (flag) {
+	if (flag && s1.empty()) {
 		std::cout << "Brackets Balanced";
 	}
 	else {
