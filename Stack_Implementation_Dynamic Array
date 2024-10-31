@@ -1,0 +1,146 @@
+#include <iostream>
+#include <string>
+class Stack {
+private: 
+	char* ch;
+	int TOP,
+		size;
+
+public:
+
+	Stack(int size = 100) {
+		this->size = size;
+		ch = new char[this->size];
+		TOP = -1;
+	}
+
+	Stack(const Stack& rhs) {
+		this->size = rhs.size;
+		this->ch = new char[this->size];
+		this->TOP = rhs.TOP;
+		for (int i = 0; i <= this->TOP; i++) {
+			this->ch[i] = rhs.ch[i];
+		}
+	}
+
+	Stack& operator=(const Stack& rhs) {
+		if (this==&rhs) {
+			return *this;
+		}
+		delete[]this->ch;
+		this->size = rhs.size;
+		this->TOP = rhs.TOP;
+		this->ch = new char[this->size];
+		for (int i = 0; i <= this->TOP; i++)
+		{
+			this->ch[i] = rhs.ch[i];
+		}
+		return *this;
+	}
+
+	~Stack() {
+		if (ch) {
+			delete[]this->ch;
+		}
+	}
+	void push(char ch) {
+		if (TOP < size - 1) {
+			this->ch[++TOP] = ch;
+		}
+		else {
+			throw ("Stack Overflow!");
+		}
+	}
+
+	void  pop() {
+		if (TOP >= 0) {
+			TOP--;
+		}
+		else {
+			throw ("Stack Underflow!");
+		}
+	}
+
+	char top() const {
+		if (TOP >= 0) return ch[TOP];
+		else {
+			throw ("Stack empty!");
+		}
+	}
+
+	bool empty()const {
+		return TOP < 0;
+	}
+
+	int Size() const {
+		return TOP + 1;
+	}
+};
+
+int main() {
+	Stack s1;
+	std::string expr;
+	std::cout << "Enter expression: ";
+	std::cin >> expr;
+	int len = expr.length();
+	bool flag = true;
+	try {
+		for (int i = 0; i < len; i++) {
+
+			if (expr[i] == '(' || expr[i] == '{' || expr[i] == '[') {
+				s1.push(expr[i]);
+			}
+
+			else if (expr[i] == ')' || expr[i] == '}' || expr[i] == ']') {
+				if (s1.empty()) {
+					flag = false;
+					break;
+				}
+				else if (expr[i] == ')') {
+					if (s1.top() == '(') {
+						s1.pop();
+						continue;
+					}
+					else {
+						flag = false;
+						break;
+					}
+				}
+				else if (expr[i] == '}') {
+					if (s1.top() == '{') {
+						s1.pop();
+						continue;
+					}
+					else {
+						flag = false;
+						break;
+					}
+				}
+
+				else if (expr[i] == ']') {
+					if (s1.top() == '[') {
+						s1.pop();
+						continue;
+					}
+					else {
+						flag = false;
+						break;
+					}
+				}
+				if (s1.empty()) {
+					flag = false;
+					break;
+				}
+			}
+		}
+	}
+	catch (std::string str) {
+		std::cout << str;
+	}
+	if (flag && s1.empty() ){
+		std::cout << "Brackets Balanced";
+	}
+	else {
+		std::cout << "Brackets not Balanced";
+	}
+} 
