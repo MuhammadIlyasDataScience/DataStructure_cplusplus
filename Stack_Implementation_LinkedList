@@ -1,0 +1,271 @@
+
+#include <iostream>
+template <typename T>
+struct Node {
+	T data;
+	Node* next;
+};
+
+template <typename T>
+class Stack {
+private:
+	Node<T>* head;
+
+public:
+
+	// Default Constructor
+	Stack() {
+		this->head = nullptr;
+
+	}
+
+	// Parametrized Constructor
+	Stack(T data) {
+		this->head = new Node<T>;
+		this->head->data = data;
+		this->head->next = nullptr;
+
+	}
+
+	// Push Function
+	void push(T data) {
+		Node<T>* temp;
+		temp = new Node<T>; // Memory allocation for entered data
+		temp->data = data;
+		temp->next = head;
+		head = temp;
+
+	}
+
+	// Pop Function
+	void pop() {
+
+		if (this->head != nullptr) {
+			Node<T>* del;
+			del = this->head;
+			this->head = del->next;
+			delete del;
+
+		}
+		else {
+			throw ("Stack Underflow!");
+
+		}
+
+	}
+
+	// TOP Function
+	T top()const {
+
+		if (this->head != nullptr) {
+			return this->head->data;
+		}
+
+		else {
+			throw ("Stack Empty!");
+		}
+
+	}
+
+	// Size Function
+	int size() const {
+		int num = 0;
+		Node<T> * trans;
+		trans = this->head;
+
+		while (trans != nullptr) {
+			trans = trans->next;
+			num++;
+
+		}
+		return num;
+	}
+
+	// != Operator 
+	friend bool operator != (const Stack& left, const Stack& right) {
+		int lfSize = left.size();
+		int riSize = right.size();
+
+		if (left.head == nullptr && right.head == nullptr) {
+			return false;
+
+		}
+
+		else if (lfSize != riSize) {
+			return true;
+
+		}
+
+		else {
+			Node<T>* lft,
+				* rig;
+			lft = left.head;
+			rig = right.head;
+
+			while (lft != nullptr && rig != nullptr) {
+
+				if (lft->data != rig->data) {
+					return true;
+				}
+				lft = lft->next;
+				rig = rig->next;
+			}
+			return false;
+		}
+	}
+
+	// > Operator 
+
+	friend bool operator >(const Stack& left, const Stack& right) {
+		int lfSize = left.size();
+		int riSize = right.size();
+
+		if (left.head == nullptr || right.head == nullptr) {
+			return false;
+		}
+		else {
+			Node<T>* lft,
+				* rig;
+			lft = left.head;
+			rig = right.head;
+
+			while (lft != nullptr && rig != nullptr) {
+
+				if (lft->data < rig->data) {
+					return false;
+				}
+				else if (lft->data > rig->data) {
+					return true;
+				}
+				lft = lft->next;
+				rig = rig->next;
+			}
+			if (lfSize > riSize)
+				return true;
+			else if (lfSize < riSize)
+				return false;
+			else
+				return false;
+		}
+	}
+
+
+	// < Operator 
+
+	friend bool operator <(const Stack<T>& left, const Stack<T>& right) {
+
+		int lfSize = left.size();
+		int riSize = right.size();
+
+		if (left.head == nullptr || right.head == nullptr) {
+			return false;
+		}
+		else {
+			Node<T>* lft,
+				* rig;
+			lft = left.head;
+			rig = right.head;
+
+			while (lft != nullptr && rig != nullptr) {
+				if (lft->data < rig->data) {
+					return true;
+				}
+				else if (lft->data > rig->data) {
+					return false;
+				}
+			    lft = lft->next;
+				rig = rig->next;
+
+			}
+
+			if (lfSize > riSize) {
+				return false;
+			}
+			else if (lfSize < riSize) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+	}
+
+	// >= Operator
+
+	friend bool operator >=(const Stack& left, const Stack& right) {
+		int lfSize = left.size();
+		int riSize = right.size();
+
+		if (left.head == nullptr && right.head == nullptr) {
+			return true;
+
+		}
+		else {
+			Node<T>* lft,
+				* rig;
+			lft = left.head;
+			rig = right.head;
+
+			while (lft != nullptr && rig != nullptr) {
+
+				if (lft->data < rig->data) {
+					return false;
+				}
+				else if (lft->data > rig->data) {
+					return true;
+				}
+			    lft = lft->next;
+			    rig = rig->next;
+			}
+
+			if (lfSize > riSize || lfSize == riSize) {
+				return true;
+
+			}
+			else if (lfSize < riSize) {
+				return false;
+
+			}
+
+			else return true;
+
+		}
+
+	}
+
+	// Swap Function
+	void swap(Stack& right) {
+
+		if (this->head == nullptr && right.head == nullptr) {
+			return;
+		}
+		Node<T>* temp;
+		temp = this->head;
+		this->head = right.head;
+		right.head = temp;
+
+	}
+
+	// Display Function
+
+	friend void display(const Stack& temp) {
+
+		if (temp.head == nullptr) {
+			std::cout << "Display: Stack Empty!";
+
+		}
+		else {
+			Node<T> * tem;
+			tem = temp.head;
+
+			while (tem != nullptr) {
+				std::cout << tem->data << " ";
+				tem = tem->next;
+
+			}
+
+		}
+
+	}
+
+};
