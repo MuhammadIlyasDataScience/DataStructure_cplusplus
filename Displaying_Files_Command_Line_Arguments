@@ -1,0 +1,21 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+int main(int argc, char* argv[]) {
+	for (int i = 1; i < argc; i++) {
+		std::ifstream readfrom(argv[i]);
+		std::string str;
+
+		if (readfrom.is_open()) {
+			while (readfrom.good()) {
+				getline(readfrom, str);
+				std::cout << str << "\n";
+			}
+			readfrom.close();
+		}
+		else {
+			std::cout << "File not opened";
+		}
+	}
+	return 0;
+}
