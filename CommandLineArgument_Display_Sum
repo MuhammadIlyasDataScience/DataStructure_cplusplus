@@ -1,0 +1,52 @@
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <string>
+
+
+
+bool isNumber(std::string temp) {
+	int size = temp.size();
+
+	for (int i = 0; i < size; i++) {
+
+		if (temp[i] < '0' || temp[i] > '9') {
+			return false;
+
+		}
+
+	}
+
+	return true;
+}
+
+int stringToInt(std::string temp) {
+	int size = temp.size();
+	int num = 0;
+	int j = 0;
+
+	for (int i = size - 1; i >= 0; i--) {
+		num += ((temp[i] - 48) * pow(10, j));
+		j++;
+
+	}
+	return num;
+
+}
+
+int main(int argc, char* argv[]) {
+
+	int sum = 0;
+	for (int i = 1; i < argc; i++) { 
+		if (isNumber(argv[i])) {
+			sum += stringToInt(argv[i]);
+		}
+
+		else {
+			continue;
+		}
+	}
+	std::cout << "sum: " << sum << "\n";
+}
+
+
