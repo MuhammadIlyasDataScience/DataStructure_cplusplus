@@ -1,0 +1,140 @@
+#include <iostream>
+
+template <typename T>
+struct Node {
+	T data;
+	Node<T>* next;
+};
+
+template <typename T>
+class Queue {
+private:
+	Node<T>* front;
+	Node<T>*  back;
+	int num;
+
+public:
+	Queue() {
+		this->front = nullptr;
+		this->back = nullptr;
+		num = 0;
+	}
+
+	Queue(T data) {
+		Node<T>* temp;
+		temp = new Node<T>;
+		temp->data = data;
+		temp->next = nullptr;
+		temp->back = temp;
+		temp->front = temp;
+		num=1;
+	}
+
+	void push(T data) {
+		Node<T>* temp;
+		temp = new Node<T>;
+		temp->data = data;
+		temp->next = nullptr;
+
+		if (this->front == nullptr) {
+			this->back = temp;
+			this->front = temp;
+		}
+
+		else {
+			Node<T>* m;
+			m = this->back;
+			temp->next = m;
+			this->back = temp;
+		}
+		num++;
+	}
+
+	void display()const {
+		Node<T>* disp, * prev;
+		if (this->front == nullptr) {
+			std::cout << "Queue is empty!";
+			return;
+		}
+		
+		disp = this->front;
+	
+		for (int i = 1; i <= num; i++) {
+			prev = this->back;
+			std::cout << disp->data;
+			for (int j = 1; j <= num-i-1; j++) {
+				prev = prev->next;
+				
+			}
+			disp = prev;
+
+		}
+	}
+
+	void pop() {
+		if (this->front==nullptr) {
+			std::cout << "Queue empty!";
+			return;
+		}
+
+		Node <T>* prev,*del;
+		del = this->front;
+		prev = this->back;
+		for (int i = 1; i <= num -3; i++) {
+			prev = prev->next;
+		}
+		this->front = prev->next;
+		prev->next->next = nullptr;
+		delete del;
+		num--;
+	}
+
+	T Front()const {
+		if (this->front==nullptr) {
+			throw "Queue Underflow!";
+		}
+		return this->front->data;
+	}
+
+	T Back()const {
+		if (this->front == nullptr) {
+			throw ("Queue Underflow!.");
+		}
+		return this->back->data;
+	}
+
+	int size()const {
+		return this->num;
+	}
+
+	bool empty()const {
+		return num == 0;
+	}
+
+};
+
+int main() {
+
+	Queue<char > q;
+	try {
+		q.push('M');
+		q.push('u');
+		q.push('h');
+		q.push('a');
+		q.push('m');
+		q.push('m');
+		q.push('a');
+		q.push('d');
+		q.display();
+		q.pop();
+		std::cout << std::endl;
+		q.display();
+		std::cout << "front element: " << q.Front() << "\n";
+		std::cout << "back element : " << q.Back() << "\n";
+		std::cout << "Size: " << q.size() << "\n";
+		std::cout << "Is empty? :" << q.empty();
+	}
+	catch (const char* ch) {
+		std::cout << ch;
+	}
+}
