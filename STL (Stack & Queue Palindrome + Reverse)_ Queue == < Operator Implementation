@@ -1,0 +1,210 @@
+#include <iostream>
+#include <stack>
+#include <queue>
+
+template <typename T>
+class Queue {
+private:
+	T* data;
+	int Front;
+	int Back;
+	int size;
+	int num;
+
+public:
+
+	// Default Parametrized Constructor
+	Queue(const int size = 50) {
+		this->size = size + 1;
+		this->data = new T[this->size];
+		this->Front = this->Back = 0;
+		this->num = 0;
+	}
+
+	void push(T ch) {
+		if ((this->Back + 1) % this->size == this->Front) {
+			throw("Queue Overflow!");
+
+		}
+		this->data[(this->Back) % this->size] = ch;
+		this->Back++;
+		this->num++;
+
+	}
+
+	friend bool operator ==(const Queue& lh, const Queue& rh) {
+
+		if ((lh.Front == lh.Back) && (rh.Front == rh.Back)) { // logic for both queue empty
+			return true;
+		}
+		else if (lh.num != rh.num) {// both number of elements equal decision
+			return false;
+		}
+		int lQ = lh.Front, rQ = rh.Front;
+
+		for (int i = 0; i < rh.num; i++) {
+			if (lh.data[lQ] != rh.data[rQ]) {
+				return false;
+			}
+			lQ = (lQ + 1) % lh.size;
+			rQ = (rQ + 1) % rh.size;
+		}
+		return true;
+	}
+
+	friend bool operator <(const Queue& lh, const Queue& rh) {
+		if (lh.num == 0 && rh.num) { // (lh.Front==lh.Back )&&(rh.Front==rh.Back)
+			return false;
+		}
+		else if (lh.num == 0) {  // lh.Front==lh.Back 
+			return true;
+		}
+
+		int lQ = lh.Front, rQ = rh.Front;
+		for (int i = 0; i < lh.num; i++) {
+			if (lh.data[lQ] < rh.data[rQ]) {
+				return true;
+			}
+			else if (lh.data[lQ] > rh.data[rQ]) {
+				return false;
+			}
+
+			lQ = (lQ + 1) % lh.size;
+			rQ = (rQ + 1) % rh.size;
+		}
+
+		if (lh.num == rh.num)
+			return false;
+
+		else if (lh.num > rh.num) // both number of elements equal decision
+			return false;
+		return true;
+
+	}
+
+	void pop() {
+
+		if (this->Front == this->Back) {
+			throw("Queue underflow!");
+
+		}
+		this->Front = (this->Front + 1) % this->size;
+		this->num--;
+
+	}
+
+	void display()const {
+		int trans = this->Front;
+		for (int i = 0; i < num; i++) {
+			std::cout << this->data[trans];
+			trans = (trans + 1) % this->size;
+		}
+	}
+
+};
+
+// Task 1. palindrome checking
+bool isPalindrome(std::stack<char>& s, std::queue<char>& q, std::string pStr, int len) {
+
+	for (int i = 0; i < len; i++) {
+		s.push(pStr[i]);
+		q.push(pStr[i]);
+
+	}
+
+	for (int i = 0; i < len; i++) {
+
+		if (s.top() != q.front()) {
+			return false;
+
+		}
+		s.pop();
+		q.pop();
+	}
+	return true;
+}
+
+
+// Reversing queue  task2
+void reverseQueue(std::queue<char>& q) {
+	std::stack<char> temp;
+	int qSize = q.size();
+
+	for (int i = 0; i < qSize; i++) {
+		temp.push(q.front());
+		q.pop();
+
+	}
+
+	for (int i = 0; i < qSize; i++) {
+		q.push(temp.top());
+		temp.pop();
+
+	}
+
+}
+
+
+// To display reversed queue
+void display(std::queue<char>temp) {
+	int s = temp.size();
+
+	for (int i = 0; i < s; i++) {
+		std::cout << temp.front();
+		temp.pop();
+
+	}
+
+}
+int main() {
+	std::cout << "\t\tQueue Task 3\n";
+	std::cout << "\t\t____________\n";
+	try {
+		Queue<char> q1, q2;
+		q1.push('2');
+		q1.push('2');
+		q2.push('1');
+		q2.push('3');
+		if (q1 == q2) {
+			std::cout << "\nboth equal\n";
+		}
+
+		else {
+			std::cout << "\nNot equal\n";
+		}
+
+		if (q1 < q2) {
+			std::cout << "\nq1 Less than q2\n";
+		}
+
+		else {
+			std::cout << "\nq1 greater than q2\n";
+		}
+		
+	}
+	catch (const char* er) {
+		std::cout << "\nWarning!. " << er << "\n";
+	}
+
+	std::stack<char> s1;
+	std::queue<char>q1;
+	std::string check;
+	std::cout << "Enter string to check palindrome: ";
+	std::cin >> check;
+
+	if (isPalindrome(s1, q1, check, check.length())) {
+		std::cout << "\nPalindrome\n";
+	}
+	else {
+		std::cout << "\nNot Palindrome\n";
+	}
+	
+	q1.push('i');
+	q1.push('l');
+	q1.push('y');
+	q1.push('a');
+	q1.push('s');
+	reverseQueue(q1);
+	display(q1);
+
+}
