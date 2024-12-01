@@ -1,0 +1,253 @@
+#include <iostream>
+
+template <typename T>
+class Node {
+public:
+	T data;
+	Node* next;
+};
+
+template <typename T>
+class forward_List {
+private:
+	Node<T>* front;
+	int num;
+
+public:
+
+	// Constructor
+	forward_List() {
+		this->front = nullptr;
+		num = 0;
+	}
+
+	// Push Function
+	void push_front(T data) {
+		Node<T>* temp;
+		temp = new Node<T>;
+		temp->data = data;
+		temp->next = this->front;
+		this->front = temp;
+		num++;
+	}
+
+	// Pop function
+	void pop_front() {
+		if (this->front == nullptr) {
+			throw("underflow!");
+		}
+
+		Node<T>* temp;
+		temp = this->front;
+		this->front = temp->next;
+		delete temp;
+		num--;
+	}
+
+	// Iterator to end 
+	T* end() {
+		Node<T>* temp;
+		temp = this->front;
+		if (temp == nullptr) {
+			throw ("Error. list empty.");
+		}
+		while (temp != nullptr && temp->next != nullptr) {
+			temp = temp->next;
+		}
+		return &temp->data;
+	}
+
+	// Lab Task (i)
+	void resize(int count) {
+		if (this->num == count) {
+			return;
+		}
+		else if (this->num > count) {
+			int c = 0;
+			Node<T>* temp = this->front;
+			Node<T>* enD = nullptr;
+
+			while (c < count) {
+				if (c == count - 1) {
+					enD = temp;
+					enD->next = nullptr;
+				}
+				temp = temp->next;
+				c++;
+			}
+			while (temp != nullptr) {
+				Node<T>* n = temp->next;
+				delete temp;
+				temp = n;
+			}
+			num = count;
+		}
+		else if (this->num < count) {
+			Node<T>* temp = this->front;
+			while (temp != nullptr && temp->next != nullptr) {
+				temp = temp->next;
+			}
+			for (int i = num; i < count; i++) {
+				Node<T>* c = new Node<T>;
+				c->data = T();
+				c->next = nullptr;
+				if (temp == nullptr) {
+					this->front = c;
+					temp = c;
+				}
+				else {
+					temp->next = c;
+					temp = c;
+				}
+			}
+			num = count;
+		}
+	}
+
+	void unique() {
+		Node<T>* temp = this->front;
+		while (temp != nullptr && temp->next != nullptr) {
+			if (temp->data == temp->next->data) {
+				Node<T>* d = temp->next;
+				temp->next = d->next;
+				delete d;
+				num--;
+			}
+			else {
+				temp = temp->next;
+			}
+		}
+	}
+
+	// Lab Task Part (iii)
+	void merge(forward_List& other) {
+
+		if (this == &other) {
+			return;
+		}
+
+		if (this->front == nullptr) {
+			this->front = other.front;
+			other.front = nullptr;
+			num += other.num;
+			other.num = 0;
+			return;
+		}
+
+		if (other.front == nullptr) {
+			return;
+		}
+
+		if (this->front->data > *other.end()) {
+			Node<T>* temp = this->front;
+			this->front = other.front;
+			Node<T>* rit = other.front;
+			while (rit != nullptr && rit->next != nullptr) {
+				rit = rit->next;
+			}
+			rit->next = temp;
+			other.front = nullptr;
+			num += other.num;
+			other.num = 0;
+			return;
+		}
+
+		if (*this->end() < other.front->data) {
+			Node<T>* lf = this->front;
+			while (lf->next != nullptr) {
+				lf = lf->next;
+			}
+			lf->next = other.front;
+			other.front = nullptr;
+			num += other.num;
+			other.num = 0;
+			return;
+		}
+
+		Node<T>* lft = this->front;
+		Node<T>* ri = other.front;
+		Node<T>* prev = nullptr;
+
+		while (ri != nullptr) {
+			while (lft != nullptr && lft->data <= ri->data) {
+				prev = lft;
+				lft = lft->next;
+			}
+
+			Node<T>* rt_next = ri->next;
+
+			if (prev != nullptr) {
+				prev->next = ri;
+			}
+			else {
+				this->front = ri;
+			}
+
+			ri->next = lft;
+			prev = ri;
+			ri = rt_next;
+		}
+
+		num += other.num;
+		other.front = nullptr;
+		other.num = 0;
+	}
+
+	void display() {
+		Node<T>* temp = this->front;
+		while (temp != nullptr) {
+			std::cout << temp->data << " ";
+			temp = temp->next;
+		}
+		std::cout << std::endl;
+	}
+};
+
+int main() {
+	forward_List<int> l1;
+	try {
+		l1.push_front(5);
+		l1.push_front(2);
+		l1.push_front(1);
+		l1.display();
+		std::cout << "\n__________________________________________________________\n";
+		l1.pop_front();
+		l1.pop_front();
+		l1.display();
+		std::cout << "\n__________________________________________________________\n";
+		l1.push_front(3);
+		l1.display();
+		std::cout << "\n__________________________________________________________\n";
+		l1.resize(1);
+		l1.display();
+		std::cout << "\n__________________________________________________________\n";
+		l1.resize(5);
+		l1.display();
+		std::cout << "\n__________________________________________________________\n";
+		l1.push_front(1);
+		l1.push_front(1);
+		l1.push_front(1);
+		l1.display();
+		std::cout << "\n__________________________________________________________\n";
+		std::cout << "After Unique\n";
+		l1.unique();
+		l1.display();
+		std::cout << "\n__________________________________________________________\n";
+		std::cout << "After merge\n";
+		forward_List<int> l2, l3;
+		l2.push_front(7);
+		l2.push_front(5);
+		l2.push_front(3);
+
+		l3.push_front(2);
+		l3.push_front(1);
+
+		l2.merge(l3);
+		l2.display();
+
+		
+	}
+	catch (const char* ms) {
+		std::cout << std::endl << ms << std::endl;
+	}
+}
