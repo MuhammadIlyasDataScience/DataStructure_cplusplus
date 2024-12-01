@@ -1,0 +1,434 @@
+#include <iostream>
+#include <stack>
+#include <string>
+#include <cmath>
+
+// Single Expression Evaluation Function
+
+int SingleExpressionEvaluator(const char argc[]) {
+    std::stack<char> s;
+    std::string str;
+
+    for (int j = 0; argc[j] != '\0'; j++) {
+
+        if (argc[j] >= '0' && argc[j] <= '9') {
+            str += argc[j];
+            int k = j + 1;
+            bool flag = false;
+
+            while (argc[k] >= '0' && argc[k] <= '9') {
+                str += argc[k];
+                flag = true;
+                k++;
+
+            }
+
+            if (flag) {
+                str += ' ';
+                j = k - 1;
+            }
+
+            else {
+                str += ' ';
+            }
+
+        }
+
+
+        else if (argc[j] == '(' || argc[j] == '{' || argc[j] == '[' || argc[j] == '^') {
+            s.push(argc[j]);
+
+        }
+
+
+        else if (argc[j] == ')') {
+
+            while (!s.empty() && s.top() != '(') {
+                str += s.top();
+                s.pop();
+
+            }
+
+            if (!s.empty()) s.pop();
+
+        }
+
+        else if (argc[j] == '}') {
+
+            while (!s.empty() && s.top() != '{') {
+                str += s.top();
+                s.pop();
+
+            }
+
+            if (!s.empty()) s.pop();
+
+
+        }
+
+
+        else if (argc[j] == ']') {
+
+            while (!s.empty() && s.top() != '[') {
+                str += s.top();
+                s.pop();
+
+            }
+            if (!s.empty()) {
+                s.pop();
+
+            }
+
+
+        }
+
+        else if (argc[j] == '*' || argc[j] == '/') {
+
+            while (!s.empty() && (s.top() == '*' || s.top() == '/' || s.top() == '^')) {
+                str += s.top();
+                s.pop();
+
+            }
+
+            s.push(argc[j]);
+
+
+        }
+
+        else if (argc[j] == '+' || argc[j] == '-') {
+
+            while (!s.empty() && (s.top() == '*' || s.top() == '/' || s.top() == '+' || s.top() == '-' || s.top() == '^')) {
+                str += s.top();
+                s.pop();
+
+            }
+
+            s.push(argc[j]);
+
+        }
+
+
+    }
+
+    while (!s.empty()) {
+        str += s.top();
+        s.pop();
+
+    }
+
+    int first, second;
+    std::stack<int> pr;
+
+
+    for (size_t j = 0; j < str.length(); j++) {
+
+        if (str[j] >= '0' && str[j] <= '9') {
+            std::string temp;
+            temp += str[j];
+            size_t k = j + 1;
+
+            while (k < str.length() && str[k] >= '0' && str[k] <= '9') {
+                temp += str[k];
+                k++;
+
+            }
+
+            int num = std::stoi(temp);
+            pr.push(num);
+            j = k - 1;
+
+        }
+
+        else if (str[j] == '+' || str[j] == '-' || str[j] == '*' || str[j] == '/' || str[j] == '^') {
+
+            second = pr.top();
+            pr.pop();
+            first = pr.top();
+            pr.pop();
+
+            if (str[j] == '+') {
+                pr.push(first + second);
+
+            }
+            else if (str[j] == '-') {
+                pr.push(first - second);
+
+            }
+            else if (str[j] == '*') {
+                pr.push(first * second);
+
+            }
+            else if (str[j] == '/') {
+                pr.push(first / second);
+
+
+            }
+            else if (str[j] == '^') {
+                pr.push(std::pow(first, second));
+
+            }
+
+        }
+
+    }
+
+    int result = pr.top();
+    return result;
+}
+
+bool ExpressionChecker(std::string &expr) {
+    bool flag = true;
+    int len = expr.length();
+    std::stack<char> br;
+
+    for (int i = 0; i < len; i++) {
+
+        if (expr[i] == '(' || expr[i] == '{' || expr[i] == '[') {
+            br.push(expr[i]);
+
+        }
+
+        else if (expr[i] == ')') {
+
+            if (br.empty() || br.top() != '(') {
+                flag = false;
+                break;
+            }
+
+            else {
+                br.pop();
+            }
+
+        }
+
+        else if (expr[i] == '}') {
+
+            if (br.empty() || br.top() != '{') {
+                flag = false;
+                break;
+
+            }
+
+            else {
+                br.pop();
+
+            }
+
+        }
+
+        else if (expr[i] == ']') {
+
+            if (br.empty() || br.top() != '[') {
+                flag = false;
+                break;
+
+            }
+
+            else {
+                br.pop();
+
+            }
+
+        }
+
+        else if (expr[i] == '*' || expr[i] == '/' || expr[i] == '+' || expr[i] == '-' || expr[i] == '^') {
+            int k = i - 1, j = i + 1;
+
+            if (i == 0 || i == len - 1 || ((expr[k] < '0' || expr[k] > '9') && (expr[j] < '0' || expr[j] > '9')) &&
+                (expr[k] != ')' && expr[k] != '}' && expr[k] != ']' && expr[j] != '(' && expr[j] != '{' && expr[j] != '[')) {
+                flag = false;
+                break;
+
+            }
+
+        }
+
+        else if ((expr[i] < '0' || expr[i] > '9')&& expr[i]!=' ') {
+            flag = false;
+            break;
+
+        }
+
+    }
+
+    if (!br.empty()) {
+        flag = false;
+    }
+
+    return flag;
+}
+
+// Function Input when run on console
+
+int terminalRun() {
+    std::string str;
+    bool flag=true;
+    std::cout << "Enter Expression: ";
+
+    do {
+
+        if(!flag){
+            std::cout << "Please enter valid expresssion! :";
+
+        }
+
+        std::cin >> str;
+        flag = ExpressionChecker(str);
+
+    } while (!flag);
+
+    int temp = SingleExpressionEvaluator(str.c_str());
+    return temp;
+
+}
+
+// Asking Continuation
+
+bool ContinueCheck() {
+    int opt;
+    std::cout << "\n--------------------------------------\n"
+        " Want to Evaluate Another Expression ? \n";
+    std::cout << "\n1. Yes"
+        << "\n2. No\n";
+
+    bool flag;
+    std::cout << "Enter Option (Number): ";
+
+    do {
+        flag = false;
+        std::cin >> opt;
+        if (std::cin.fail()) {
+            flag = true;
+            std::cin.clear();
+            std::cin.ignore(100, '\n');
+
+        }
+
+        else if (opt < 1 || opt > 2) {
+            flag = true;
+
+        }
+
+        if (flag) {
+            std::cout << "Please enter correct number!: ";
+
+        }
+
+    } while (flag);
+
+    return opt == 1;
+}
+
+// Additional Functionalities
+
+int ExtraFunctionalities() {
+    std::cout << "\n-------------------------------------------------\n";
+    std::cout << "1. MS\n"
+        << "2. MR\n"
+        << "3. M+\n";
+    int opt;
+    std::cout << "\n----------------------------------\n"
+        << "Please enter option (number): ";
+
+    bool flag = true;
+    
+    do {
+        flag = true;
+        std::cin >> opt;
+        if (std::cin.fail()) {
+            flag = false;
+            std::cin.clear();
+            std::cin.ignore(100000, '\n');
+            std::cout << "input fail: ";
+        }
+        if (opt < 1 || opt > 3) {
+            flag = false;
+            std::cout << "please enter number in range!: ";
+        }
+      
+            
+    } while (flag == false);
+    return opt;
+}
+// Main function to drive the calculator
+int main(int num = 0, char* arg[] = nullptr) {
+
+    if (num > 1) {
+
+        bool flag = true;
+        for (int i = 0; arg[i] != '\0'; i++) {
+            if (arg[1][i] != '*' && arg[1][i] != '/' && arg[1][i] != '+' && arg[1][i] != '-' && arg[1][i] != '^') {
+                flag = false;
+
+            }
+
+        }
+        std::string str;
+        for (int i = 1; i < num; i++) {
+            if (flag) {
+                std::string exp(arg[i]);
+                bool flag = ExpressionChecker(exp);
+
+                if (!flag) {
+                    std::cout << "Invalid Expression!.";
+                }
+
+                else {
+                    int result = SingleExpressionEvaluator(arg[i]);
+                    std::cout << "Expression: " << arg[i] << std::endl << "Result: " << result << std::endl;
+                }
+            }
+            else {
+                str += arg[i];
+            }
+        }
+
+        if (!flag) {
+            bool f=ExpressionChecker(str);
+
+            if (f) {
+                int result = SingleExpressionEvaluator(str.c_str());
+                std::cout << "Expression: " << str << " Result: " << result;
+
+            }
+
+            else {
+                std::cout << "Expression is invalid!";
+            }
+
+        }
+
+    }
+
+    else {
+        bool flag;
+        int MS = 0;
+
+        do {
+            int Result = terminalRun();
+            std::cout << "Result: " << Result << std::endl;
+
+            int checkopt = ExtraFunctionalities();
+
+            if (checkopt == 1) {
+                MS = Result;
+
+            }
+
+            else if (checkopt == 2) {
+                std::cout << "Previous Result: " << MS<< std::endl;
+
+            }
+
+            else if (checkopt == 3) {
+                MS = MS + Result;
+            }
+
+            flag = ContinueCheck();
+
+        } while (flag);
+
+    }
+    return 0;
+
+}
