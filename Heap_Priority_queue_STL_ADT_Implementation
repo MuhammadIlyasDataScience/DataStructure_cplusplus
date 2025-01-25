@@ -1,0 +1,124 @@
+#include <iostream>
+namespace cs211 {
+    template <typename T>
+    class priority_queue {
+    private:
+        T* data;  // Array to store heap elements
+        int size; // Maximum capacity
+        int n;    // Current last index (-1 means empty)
+
+    public:
+        // Constructor with default size of 100
+        priority_queue(int s = 100) : size(s), n(-1) {
+            data = new T[size];
+        }
+
+        // Get the top element of the priority queue
+        T top() const {
+            if (n == -1) {
+                std::cout << "Queue underflow!" << std::endl;
+                return T(); // Default-constructed value of T
+            }
+            return data[0];
+        }
+
+        // Restore heap property upwards
+        void ReheapUp(int first, int insr) {
+            int parent = (insr - 1) / 2; // Parent index
+            if (insr > first && data[parent] < data[insr]) {
+                std::swap(data[parent], data[insr]);
+                ReheapUp(first, parent); // Recursive call for parent
+            }
+        }
+
+        // Restore heap property downwards
+        void ReheapDown(int first, int last) {
+            int lf_ch = 2 * first + 1; // Left child index
+            int ri_ch = 2 * first + 2; // Right child index
+            int largest = first;
+
+            if (lf_ch <= last && data[lf_ch] > data[largest]) {
+                largest = lf_ch;
+            }
+            if (ri_ch <= last && data[ri_ch] > data[largest]) {
+                largest = ri_ch;
+            }
+            if (largest != first) {
+                std::swap(data[first], data[largest]);
+                ReheapDown(largest, last); // Recursive call for the largest child
+            }
+        }
+
+        // Remove the top element
+        void pop() {
+            if (n == -1) {
+                std::cout << "Queue underflow!" << std::endl;
+                return;
+            }
+            data[0] = data[n];
+            n--;
+            ReheapDown(0, n); // Restore heap property
+        }
+
+        // Add a new element
+        void push(const T& val) {
+            if (n + 1 >= size) {
+                std::cout << "Queue overflow!" << std::endl;
+                return;
+            }
+            n++;
+            data[n] = val;
+            ReheapUp(0, n); // Restore heap property
+        }
+
+        // Check if the queue is empty
+        bool empty() const {
+            return n == -1;
+        }
+
+        // Get the number of elements in the queue
+        int Size() const {
+            return n + 1; // +1 because n is the last index
+        }
+
+        // Destructor to release memory
+        ~priority_queue() {
+            delete[] data; // Use delete[] for arrays
+        }
+
+        // Friend function to perform heap sort
+        friend void heapSort(priority_queue& q) {
+            // Step 1: Build the heap (heapify)
+            for (int i = q.n / 2; i >= 0; i--) {
+                q.ReheapDown(i, q.n);
+            }
+
+            // Step 2: Sort the heap
+            for (int i = q.n; i > 0; i--) {
+                std::swap(q.data[0], q.data[i]); // Swap root with the last element
+                q.ReheapDown(0, i - 1);          // Restore heap property
+            }
+        }
+    };
+}
+
+// Main function to demonstrate functionality
+int main() {
+    cs211::priority_queue<int> pq;
+
+    pq.push(10);
+    pq.push(30);
+    pq.push(20);
+    pq.push(5);
+
+    std::cout << "Top element: " << pq.top() << std::endl;
+
+    std::cout << "Heap elements: ";
+    while (!pq.empty()) {
+        std::cout << pq.top() << " ";
+        pq.pop();
+    }
+    std::cout << std::endl;
+
+    return 0;
+}
