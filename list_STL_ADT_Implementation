@@ -1,0 +1,177 @@
+#pragma once
+template <typename T>
+class node
+{
+public:
+	T val;
+	node<T>* next;
+	node <T>* prev;
+
+};
+
+#pragma once
+#include "node.h"
+#include <iostream>
+
+namespace cs211 {
+    template <typename T>
+    class list {
+    private:
+        node<T>* H;
+        int n;
+
+    public:
+        // Iterator class
+        class iterator {
+        private:
+            node<T>* ptr;
+
+        public:
+            iterator(node<T>* p = nullptr) : ptr(p) {} // Constructor for the iterator
+
+            T& operator*() {
+                return this->ptr->val;
+            }
+
+            T* operator->() {
+                return &(this->ptr->val); 
+            }
+
+            iterator& operator--() {
+                this->ptr = this->ptr->prev;
+                return *this;
+            }
+
+            iterator operator--(int) {
+                iterator temp = *this;
+                this->ptr = this->ptr->prev;
+                return temp;
+            }
+
+            iterator& operator++() {
+                this->ptr = this->ptr->next;
+                return *this;
+            }
+
+            iterator operator++(int) {
+                iterator temp = *this;
+                this->ptr = this->ptr->next;
+                return temp;
+            }
+
+            bool operator==(const iterator& other) const {
+                return this->ptr == other.ptr;
+            }
+
+            bool operator!=(const iterator& other) const {
+                return this->ptr != other.ptr;
+            }
+
+            friend class list; // Allow list to access private members of iterator
+        };
+
+        list() {
+            this->H = new node<T>;
+            this->H->next = this->H->prev = this->H;
+            this->n = 0;
+        }
+
+        iterator begin() {
+            return iterator(this->H->next);
+        }
+
+        iterator rbegin() {
+            return iterator(this->H->prev);
+        }
+
+        iterator end() {
+            return iterator(this->H);
+        }
+
+        iterator rend() {
+            return iterator(this->H);
+        }
+
+        void push_front(const T& val) {
+            node<T>* ptr = new node<T>;
+            ptr->val = val;
+            ptr->next = this->H->next;
+            ptr->prev = this->H;
+            this->H->next->prev = ptr;
+            this->H->next = ptr;
+            this->n++;
+        }
+
+        void push_back(const T& val) {
+            node<T>* ptr = new node<T>;
+            ptr->val = val;
+            ptr->next = this->H;
+            ptr->prev = this->H->prev;
+            this->H->prev->next = ptr;
+            this->H->prev = ptr;
+            this->n++;
+        }
+
+        void pop_back() {
+            if (this->H->prev == this->H) {
+                std::cout << "list underflow!";
+                return;
+            }
+            node<T>* ptr = this->H->prev;
+            ptr->prev->next = this->H;
+            this->H->prev = ptr->prev;
+            delete ptr;
+            this->n--;
+        }
+
+        T front() const {
+            if (this->H->next == this->H) {
+                throw std::runtime_error("list underflow!");
+            }
+            return this->H->next->val;
+        }
+
+        T back() const {
+            if (this->H->prev == this->H) {
+                std::cout<<"list underflow!";
+            }
+            return this->H->prev->val;
+        }
+
+        bool empty() const {
+            return this->H->next == this->H;
+        }
+
+        void clear() {
+            node<T>* ptr;
+            while (this->H->next != this->H) {
+                ptr = this->H->next;
+                this->H->next = ptr->next;
+                delete ptr;
+            }
+            this->H->prev = this->H;
+            this->n = 0;
+        }
+
+        void erase(const iterator& it) {
+            node<T>* ptr = it.ptr;
+            if (ptr == this->H) {
+                std::cout<<"list Underflow!";
+            }
+            ptr->prev->next = ptr->next;
+            ptr->next->prev = ptr->prev;
+            delete ptr;
+            this->n--;
+        }
+
+        int size() const {
+            return this->n;
+        }
+
+        ~list() {
+            this->clear();
+            delete this->H;
+        }
+    };
+
+} 
