@@ -1,0 +1,98 @@
+#include <iostream>
+#include <list>
+
+int hash(int key, int size) {
+	return key % size;
+}
+
+template <typename K, typename V>
+class Chaining {
+private:
+	std::list<std::pair<K, V>>* ptr; // Array of lists (buckets)
+	int size;
+
+public:
+	// Constructor
+	Chaining(int s = 10) {
+		this->size = s;
+		ptr = new std::list<std::pair<K, V>>[this->size];
+	}
+
+	// Destructor
+	~Chaining() {
+		delete[] ptr;
+	}
+
+	// Insert a key-value pair
+	void insert(K key, V val) {
+		std::pair<K, V> p;
+		p.first = key;
+		p.second = val;
+		int idx = hash(key, size);
+		ptr[idx].push_back(p);
+	}
+
+	// Erase a key-value pair
+	void erase(K key) {
+		int idx = hash(key, size);
+		typename std::list<std::pair<K, V>>::iterator it;
+		for (it = ptr[idx].begin(); it != ptr[idx].end(); ++it) {
+			if (it->first == key) {
+				ptr[idx].erase(it);
+				return;
+			}
+		}
+		std::cout << "Key " << key << " not found.\n";
+	}
+
+	// Find a value by key
+	void find(K key) {
+		int idx = hash(key, size);
+		typename std::list<std::pair<K, V>>::const_iterator it;
+		for (it = ptr[idx].begin(); it != ptr[idx].end(); ++it) {
+			if (it->first == key) {
+				std::cout << "Key: " << key << ", Value: " << it->second << "\n";
+				return;
+			}
+		}
+		std::cout << "Key " << key << " not found.\n";
+	}
+
+	// Display the hash table
+	void display() const {
+		for (int i = 0; i < size; ++i) {
+			std::cout << "Bucket " << i << ": ";
+		    typename std::list<std::pair<K, V>>::const_iterator it;
+			for (it = ptr[i].begin(); it != ptr[i].end(); ++it) {
+				std::cout << "(" << it->first << ", " << it->second << ") ";
+			}
+			std::cout << "\n";
+		}
+	}
+};
+
+int main() {
+	Chaining<int, std::string> hashTable(5);
+
+	hashTable.insert(1, "One");
+	hashTable.insert(6, "Six");
+	hashTable.insert(11, "Eleven");
+	hashTable.insert(2, "Two");
+
+	std::cout << "Hash Table Contents:\n";
+	hashTable.display();
+
+	std::cout << "\nFinding key 6:\n";
+	hashTable.find(6);
+
+	std::cout << "\nErasing key 6:\n";
+	hashTable.erase(6);
+
+	std::cout << "\nHash Table After Erase:\n";
+	hashTable.display();
+
+	std::cout << "\nFinding key 6 after erase:\n";
+	hashTable.find(6);
+
+	return 0;
+}
