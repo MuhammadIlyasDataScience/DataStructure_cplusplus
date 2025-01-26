@@ -1,0 +1,39 @@
+void insert(const T& val) {
+    node<T>* ptr;
+    ptr = new node<T>;
+    ptr->val = val;
+
+    if (this->H == nullptr) { // If the list is empty
+        this->H = ptr;
+        ptr->next = ptr->prev = nullptr;
+        return;
+    }
+
+    node<T>* t = this->H; // Current node
+    node<T>* pr = nullptr; // Previous node (initially null)
+
+    while (t != nullptr) {
+        if (val < t->val) {
+            if (t->prev != nullptr) { // If t is not the first node
+                node<T>* f = t->prev;
+                ptr->next = t;
+                t->prev = ptr;
+                ptr->prev = f;
+                f->next = ptr;
+            } else { // If t is the first node
+                t->prev = ptr;
+                ptr->next = t;
+                ptr->prev = nullptr;
+                this->H = ptr; // Update head pointer
+            }
+            return;
+        }
+        pr = t; // Update previous node
+        t = t->next; // Move to the next node
+    }
+
+    // Insert at the end of the list
+    pr->next = ptr;
+    ptr->prev = pr;
+    ptr->next = nullptr;
+}
